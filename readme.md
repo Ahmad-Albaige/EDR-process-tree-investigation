@@ -1,83 +1,137 @@
-# **EDR Process Tree Investigation**
+## EDR → SIEM Process Tree Investigation
 
 
 
-#### Overview
+**LimaCharlie · Python · Splunk**
 
 
 
-This project demonstrates hands-on EDR investigation on a Windows endpoint, focusing on process ancestry analysis and identification of a suspicious execution chain.
+##### Overview
+
+##### 
+
+This project demonstrates an end-to-end SOC investigation workflow where raw EDR telemetry is collected, enriched with Python, and ingested into a SIEM (Splunk) for analysis.
 
 
 
-Validate endpoint visibility and document the investigation in a SOC-ready format.
+The focus is on detecting and understanding PowerShell-based process execution chains, a common technique used in real-world attacks.
 
 
 
-\-
+##### Architecture
 
-#### Scenario
+* Windows 10 VM
+* LimaCharlie EDR Sensor
+* Raw EDR JSON Events
+* Python Enrichment Script
+* Enriched Log File (UTF-8)
+* Splunk Universal Forwarder
+* Splunk Enterprise (Ubuntu vm)
 
 
 
-Telemetry was produced by a Windows workstation that showed PowerShell spawning cmd.exe, which in turn spawned a secondary process.
+##### Lab Environment
 
 
 
-The behavior mimicked **LOLBins-style execution**, commonly trended within SOC environments.
+**Endpoint**
 
-Observed Process Tree
+* Windows 10 VM
+* LimaCharlie Sensor installed
+* Splunk Universal Forwarder installed
+* Python 3.14
+
+
+
+**SIEM**
+
+Splunk Enterprise (Ubuntu VM)
+
+
+
+##### What the Project Does?
+
+
+
+1. **Collects EDR process creation events from LimaCharlie**
+2. **Parses raw JSON telemetry using Python**
+3. **Builds parent → child process relationships**
+4. **Filters noise (e.g. Splunk internal processes)**
+5. **Writes enriched events to a custom log file**
+6. **Ingests enriched logs into Splunk**
+7. **Searches and validates results in Splunk**
+
+
+
+##### Example Use Case
+
+
+
+Observed behavior:
+
+
 
 Explorer.exe
 
-└── PowerShell.exe
+&nbsp;└─ PowerShell.exe
 
-└── cmd.exe
-
-└── notepad.exe
-
-
-
-#### Proof
-
-
-
-EDR Tree View showing the full parent/child process chain
-
-
-
-Command-line execution captured by endpoint telemetry
-
-
-
-Screenshots are available in the `screenshots/` directory.
+&nbsp;   └─ python.exe
 
 
 
 
 
-
-
-#### Documentation
-
-A professional SOC-style incident report is included:
-
-shift-report.md
+This type of execution chain is high-risk in real environments and often associated with:
 
 
 
+**Initial access**
 
+**Script-based payload execution**
 
-#### Skills Demonstrated
-
-
-
-* Endpoint telemetry analysis
-* Ancestry research process
-* Filtering noise and correlating events
-* SOC-quality incident documentation .
+**Living-off-the-land techniques**
 
 
 
- Environment Operating System: Windows 10 (x64) The EDR platform is LimaCharlie. Activity Type: Controlled lab simulation
+Python Enrichment Output (Example)
+
+{
+
+&nbsp; "event\_type": "powershell\_process\_chain",
+
+&nbsp; "parent\_process": "C:\\\\Windows\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\PowerShell.exe",
+
+&nbsp; "child\_process": "C:\\\\Program Files\\\\Python314\\\\python.exe",
+
+&nbsp; "timestamp": "2025-12-26T13:10:41Z",
+
+&nbsp; "source": "limacharlie\_edr",
+
+&nbsp; "user": null
+
+}
+
+
+
+Splunk Ingestion
+
+Log File
+
+C:\\Logs\\edr\_enriched.log
+
+
+
+Sourcetype
+
+edr:enriched:powershell
+
+
+
+Splunk Search (spl)
+
+index=main sourcetype=edr:enriched:powershell
+
+
+
+
 
