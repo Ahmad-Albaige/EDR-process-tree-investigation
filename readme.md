@@ -14,7 +14,7 @@ This project demonstrates an end-to-end SOC investigation workflow where raw EDR
 
 
 
-The focus is on detecting and understanding PowerShell-based process execution chains, a common technique used in real-world attacks.
+The focus is on detecting and understanding PowerShell-based process execution chains, a technique commonly investigated in SOC environments due to its frequent abuse by attackers
 
 
 
@@ -64,6 +64,10 @@ Splunk Enterprise (Ubuntu VM)
 
 
 ##### Example Use Case
+
+Why this matters:
+- PowerShell spawning secondary interpreters is frequently abused to evade simple signature-based detection.
+- Parent-child relationships provide stronger detection context than single-event alerts.
 
 
 
@@ -132,6 +136,9 @@ Splunk Search (spl)
 index=main sourcetype=edr:enriched:powershell
 
 
-
+## Analyst Takeaways
+- Demonstrates how raw EDR telemetry can be transformed into investigation-ready context.
+- Shows the value of parent-child process analysis over standalone process alerts.
+- Mirrors real SOC workflows: collect → enrich → ingest → investigate.
 
 
