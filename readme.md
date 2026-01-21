@@ -39,7 +39,7 @@ The focus is on detecting and understanding PowerShell-based process execution c
 * Windows 10 VM
 * LimaCharlie Sensor installed
 * Splunk Universal Forwarder installed
-* Python 3.14
+* Python 3.13
 
 
 
